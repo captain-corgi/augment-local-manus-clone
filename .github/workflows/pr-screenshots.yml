@@ -35,7 +35,7 @@ jobs:
         sleep 5
         
     - name: Take screenshots
-      uses: flameddd/screenshots-ci-action@v1.1.1
+      uses: flameddd/screenshots-ci-action@v2.1.0
       with:
         url: http://localhost:5000
         devices: iPhone 6,iPhone X,iPad,Nexus 10,Laptop,Desktop

@@ -1,0 +1,39 @@
+name: PR Lint
+
+on:
+  pull_request:
+    types: [opened, edited, synchronize, reopened]
+
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - uses: actions/checkout@v3
+      
+    - name: Lint PR
+      uses: morrisoncole/pr-lint-action@v1.7.0
+      with:
+        repo-token: ${{ secrets.GITHUB_TOKEN }}
+        title-regex: '^(feat|fix|docs|style|refactor|perf|test|build|ci|chore|revert)(\([a-z0-9-]+\))?: [A-Z].+$'
+        on-failed-regex-comment: |
+          Your PR title doesn't follow our conventional commit format.
+          
+          Please use one of the following formats:
+          - `feat: Description` for new features
+          - `fix: Description` for bug fixes
+          - `docs: Description` for documentation changes
+          - `style: Description` for formatting changes
+          - `refactor: Description` for code refactoring
+          - `perf: Description` for performance improvements
+          - `test: Description` for test changes
+          - `build: Description` for build system changes
+          - `ci: Description` for CI changes
+          - `chore: Description` for maintenance tasks
+          - `revert: Description` for reverting changes
+          
+          You can also include a scope: `feat(backend): Description`
+          
+          The description should start with a capital letter.
+        on-failed-regex-fail-action: false
+        on-failed-regex-create-review: true

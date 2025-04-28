@@ -1,0 +1,42 @@
+name: PR Template Check
+
+on:
+  pull_request:
+    types: [opened, edited, synchronize, reopened]
+
+jobs:
+  check-template:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - uses: actions/checkout@v3
+      
+    - name: Check PR template
+      id: check-template
+      run: |
+        PR_BODY="${{ github.event.pull_request.body }}"
+        
+        # Check if PR body contains template placeholders
+        if [[ $PR_BODY == *"Please describe your changes here"* ]] || [[ $PR_BODY == *"<!-- Please provide a brief description"* ]]; then
+          echo "template_not_filled=true" >> $GITHUB_OUTPUT
+        else
+          echo "template_not_filled=false" >> $GITHUB_OUTPUT
+        fi
+        
+    - name: Comment on PR with template not filled
+      if: steps.check-template.outputs.template_not_filled == 'true'
+      uses: thollander/actions-comment-pull-request@v2
+      with:
+        message: |
+          ⚠️ **PR Template Not Filled**
+          
+          It looks like you haven't filled out the PR template completely. Please update your PR description with the following information:
+          
+          - A clear description of the changes
+          - The related issue (if any)
+          - The type of change
+          - How the changes have been tested
+          - Any additional context or screenshots
+          
+          This information helps reviewers understand your changes and speeds up the review process.
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

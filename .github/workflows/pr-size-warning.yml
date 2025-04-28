@@ -1,0 +1,51 @@
+name: PR Size Warning
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+
+jobs:
+  warn-big-pr:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - uses: actions/checkout@v3
+      with:
+        fetch-depth: 0
+        
+    - name: Check PR size
+      id: check-pr-size
+      run: |
+        # Get number of changed files
+        NUM_FILES=$(git diff --name-only origin/main...HEAD | wc -l)
+        
+        # Get number of changed lines
+        NUM_LINES=$(git diff --numstat origin/main...HEAD | awk '{s+=$1+$2} END {print s}')
+        
+        echo "num_files=$NUM_FILES" >> $GITHUB_OUTPUT
+        echo "num_lines=$NUM_LINES" >> $GITHUB_OUTPUT
+        
+        if [ $NUM_FILES -gt 20 ] || [ $NUM_LINES -gt 1000 ]; then
+          echo "big_pr=true" >> $GITHUB_OUTPUT
+        else
+          echo "big_pr=false" >> $GITHUB_OUTPUT
+        fi
+        
+    - name: Comment on big PR
+      if: steps.check-pr-size.outputs.big_pr == 'true'
+      uses: thollander/actions-comment-pull-request@v2
+      with:
+        message: |
+          ⚠️ **Large PR Warning**
+          
+          This PR is quite large:
+          - Changed files: ${{ steps.check-pr-size.outputs.num_files }}
+          - Changed lines: ${{ steps.check-pr-size.outputs.num_lines }}
+          
+          Large PRs are harder to review and more likely to contain bugs. Consider splitting this PR into smaller, more focused PRs if possible.
+          
+          Some tips for splitting PRs:
+          - Focus on one feature or bug fix per PR
+          - Separate refactoring from feature changes
+          - Break down large features into smaller, incremental changes
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

@@ -1,0 +1,67 @@
+name: Code Coverage
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  go-coverage:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        service: [task-service, ai-service, code-execution-service, web-browsing-service, filesystem-service]
+    
+    steps:
+    - uses: actions/checkout@v3
+      
+    - name: Set up Go
+      uses: actions/setup-go@v4
+      with:
+        go-version: '1.21'
+        
+    - name: Run tests with coverage
+      run: |
+        cd backend/${{ matrix.service }}
+        go test -race -coverprofile=coverage.txt -covermode=atomic ./...
+        
+    - name: Upload coverage to Codecov
+      uses: codecov/codecov-action@v3
+      with:
+        file: ./backend/${{ matrix.service }}/coverage.txt
+        flags: backend,${{ matrix.service }}
+        name: ${{ matrix.service }}
+        fail_ci_if_error: false
+        
+  js-coverage:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        app: [shell, task-management-app, result-viewer-app]
+    
+    steps:
+    - uses: actions/checkout@v3
+      
+    - name: Set up Node.js
+      uses: actions/setup-node@v3
+      with:
+        node-version: '16'
+        
+    - name: Install dependencies
+      run: |
+        cd frontend/${{ matrix.app }}
+        npm ci
+        
+    - name: Run tests with coverage
+      run: |
+        cd frontend/${{ matrix.app }}
+        npm test -- --coverage
+        
+    - name: Upload coverage to Codecov
+      uses: codecov/codecov-action@v3
+      with:
+        directory: ./frontend/${{ matrix.app }}/coverage
+        flags: frontend,${{ matrix.app }}
+        name: ${{ matrix.app }}
+        fail_ci_if_error: false

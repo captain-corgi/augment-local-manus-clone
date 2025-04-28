@@ -1,0 +1,110 @@
+name: Release
+
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'Version to release (e.g., 1.0.0)'
+        required: true
+      release_type:
+        description: 'Release type'
+        required: true
+        default: 'minor'
+        type: choice
+        options:
+          - major
+          - minor
+          - patch
+
+jobs:
+  prepare-release:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - uses: actions/checkout@v3
+      with:
+        fetch-depth: 0
+        
+    - name: Set up Git
+      run: |
+        git config --global user.name "GitHub Actions"
+        git config --global user.email "actions@github.com"
+        
+    - name: Validate version
+      run: |
+        if ! [[ "${{ github.event.inputs.version }}" =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
+          echo "Invalid version format. Please use semantic versioning (e.g., 1.0.0)."
+          exit 1
+        fi
+        
+    - name: Create release branch
+      run: |
+        git checkout -b release/v${{ github.event.inputs.version }}
+        
+    - name: Update version in files
+      run: |
+        # Update version in package.json files
+        for app in frontend/*; do
+          if [ -d "$app" ] && [ -f "$app/package.json" ]; then
+            echo "Updating version in $app/package.json..."
+            sed -i 's/"version": "[^"]*"/"version": "${{ github.event.inputs.version }}"/g' $app/package.json
+          fi
+        done
+        
+        # Update version in README.md
+        sed -i 's/v[0-9]\+\.[0-9]\+\.[0-9]\+/v${{ github.event.inputs.version }}/g' README.md
+        
+    - name: Commit changes
+      run: |
+        git add -A
+        git commit -m "chore: bump version to v${{ github.event.inputs.version }}"
+        
+    - name: Push release branch
+      run: |
+        git push origin release/v${{ github.event.inputs.version }}
+        
+    - name: Create pull request
+      uses: peter-evans/create-pull-request@v5
+      with:
+        token: ${{ secrets.GITHUB_TOKEN }}
+        title: "Release v${{ github.event.inputs.version }}"
+        body: |
+          This PR prepares the release of version v${{ github.event.inputs.version }}.
+          
+          ## Changes
+          
+          <!-- Please list the main changes in this release -->
+          
+          ## Checklist
+          
+          - [ ] All tests pass
+          - [ ] Documentation is updated
+          - [ ] Release notes are complete
+        branch: release/v${{ github.event.inputs.version }}
+        base: main
+        
+  create-release:
+    needs: prepare-release
+    runs-on: ubuntu-latest
+    if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags/v')
+    
+    steps:
+    - uses: actions/checkout@v3
+      with:
+        fetch-depth: 0
+        
+    - name: Generate changelog
+      id: changelog
+      uses: metcalfc/changelog-generator@v4.0.1
+      with:
+        myToken: ${{ secrets.GITHUB_TOKEN }}
+        
+    - name: Create GitHub release
+      uses: softprops/action-gh-release@v1
+      with:
+        body: ${{ steps.changelog.outputs.changelog }}
+        draft: false
+        prerelease: false
+        files: |
+          LICENSE
+          README.md

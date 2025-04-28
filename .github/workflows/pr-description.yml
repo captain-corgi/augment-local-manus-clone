@@ -1,0 +1,20 @@
+name: PR Description
+
+on:
+  pull_request:
+    types: [opened, edited, synchronize, reopened]
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - uses: actions/checkout@v3
+      
+    - name: Validate PR description
+      uses: JJ/github-pr-contains-action@releases/v9
+      with:
+        github-token: ${{ secrets.GITHUB_TOKEN }}
+        bodyContains: "## Description"
+        bodyDoesNotContain: "Please describe your changes here"
+        bodyMinLength: 50

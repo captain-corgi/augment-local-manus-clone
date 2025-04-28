@@ -1,0 +1,30 @@
+name: PR Comment
+
+on:
+  pull_request:
+    types: [opened]
+
+jobs:
+  comment:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - uses: actions/checkout@v3
+      
+    - name: Comment on PR
+      uses: thollander/actions-comment-pull-request@v2
+      with:
+        message: |
+          Thank you for your contribution! 🎉
+          
+          Here's a checklist to help you ensure your PR is ready for review:
+          
+          - [ ] The PR title follows our conventional commit format
+          - [ ] The PR description explains the changes and the rationale behind them
+          - [ ] All tests pass
+          - [ ] Documentation has been updated (if applicable)
+          - [ ] The code follows our style guidelines
+          - [ ] The changes are covered by tests (if applicable)
+          
+          Our team will review your PR as soon as possible. Thank you for your patience!
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

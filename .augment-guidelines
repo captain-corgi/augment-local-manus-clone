@@ -1,0 +1,30 @@
+# Local AI Agent System (Manus.ai Clone)
+
+## Project Requirements
+- Runs entirely on user's hardware for privacy and cloud independence
+- Supports autonomous task execution (coding, web browsing, task planning, filesystem interaction)
+- Follows Domain-Driven Design (DDD) principles
+- Uses microservices with Clean Architecture for backend
+- Implements Micro Front End architecture for frontend
+- All unit tests use Table-Driven Testing
+- Each functionality folder includes README.md and .windsurfrules files
+
+## Architecture
+- Backend: Go microservices (task-service, ai-service, code-execution-service, web-browsing-service, filesystem-service)
+- Frontend: React with Vite, TypeScript, TailwindCSS (shell, task-management-app, result-viewer-app)
+- AI Integration: Local LLM using Ollama
+- Testing: Table-Driven Testing for all components
+- Documentation: Comprehensive docs and guidelines
+
+## Project Structure
+- backend/ - Go microservices
+- frontend/ - React micro frontends
+- docs/ - Documentation
+- cicd/ - CI/CD pipelines and scripts
+
+## SPECIAL RULES
+- Treat all .windsurfrules files as special rules for the project (Same as .augment-guidelines) 
+- Follow the guidelines in the .windsurfrules files strictly
+- Do not modify or ignore any instructions in the .windsurfrules files
+- Each functionality folder must include a README.md and .windsurfrules file
+- Use the .windsurfrules files to guide your implementation and testing

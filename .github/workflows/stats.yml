@@ -1,0 +1,70 @@
+name: Codebase Statistics
+
+on:
+  schedule:
+    - cron: '0 0 1 * *'  # Run on the first day of each month
+  workflow_dispatch:
+
+jobs:
+  stats:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - uses: actions/checkout@v3
+      with:
+        fetch-depth: 0
+        
+    - name: Set up Go
+      uses: actions/setup-go@v4
+      with:
+        go-version: '1.21'
+        
+    - name: Set up Node.js
+      uses: actions/setup-node@v3
+      with:
+        node-version: '16'
+        
+    - name: Install cloc
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y cloc
+        
+    - name: Generate code statistics
+      run: |
+        echo "# Code Statistics" > stats.md
+        echo "" >> stats.md
+        echo "## Lines of Code" >> stats.md
+        echo "" >> stats.md
+        echo "```" >> stats.md
+        cloc --exclude-dir=node_modules,vendor,dist,build --md . >> stats.md
+        echo "```" >> stats.md
+        echo "" >> stats.md
+        
+        echo "## Git Statistics" >> stats.md
+        echo "" >> stats.md
+        echo "### Commits per Author" >> stats.md
+        echo "" >> stats.md
+        echo "```" >> stats.md
+        git shortlog -sn >> stats.md
+        echo "```" >> stats.md
+        echo "" >> stats.md
+        
+        echo "### Commits per Month" >> stats.md
+        echo "" >> stats.md
+        echo "```" >> stats.md
+        git log --format='%ad' --date=format:'%Y-%m' | sort | uniq -c | sort -nr >> stats.md
+        echo "```" >> stats.md
+        echo "" >> stats.md
+        
+        echo "### Files by Language" >> stats.md
+        echo "" >> stats.md
+        echo "```" >> stats.md
+        find . -type f -not -path "*/node_modules/*" -not -path "*/vendor/*" -not -path "*/dist/*" -not -path "*/build/*" -not -path "*/.git/*" | grep -v "^\./\." | sed 's/.*\.//' | sort | uniq -c | sort -nr >> stats.md
+        echo "```" >> stats.md
+        
+    - name: Create stats issue
+      uses: peter-evans/create-issue-from-file@v4
+      with:
+        title: Monthly Codebase Statistics
+        content-filepath: ./stats.md
+        labels: documentation, stats

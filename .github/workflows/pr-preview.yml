@@ -1,0 +1,30 @@
+name: PR Preview
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+
+jobs:
+  preview:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - uses: actions/checkout@v3
+      
+    - name: Set up Node.js
+      uses: actions/setup-node@v3
+      with:
+        node-version: '16'
+        
+    - name: Build frontend
+      run: |
+        cd frontend/shell
+        npm ci
+        npm run build
+        
+    - name: Deploy preview
+      uses: rossjrw/pr-preview-action@v1
+      with:
+        source-dir: ./frontend/shell/dist
+        preview-branch: gh-pages
+        umbrella-dir: pr-preview

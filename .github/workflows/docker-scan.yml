@@ -1,0 +1,60 @@
+name: Docker Image Scan
+
+on:
+  push:
+    branches: [ main ]
+    paths:
+      - 'backend/*/Dockerfile'
+      - 'frontend/*/Dockerfile'
+  pull_request:
+    branches: [ main ]
+    paths:
+      - 'backend/*/Dockerfile'
+      - 'frontend/*/Dockerfile'
+  schedule:
+    - cron: '0 0 * * 1'  # Run every Monday at midnight
+
+jobs:
+  scan-backend-images:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        service: [task-service, ai-service, code-execution-service, web-browsing-service, filesystem-service]
+    
+    steps:
+    - uses: actions/checkout@v3
+      
+    - name: Build image
+      run: |
+        docker build -t local-ai-agent-${{ matrix.service }}:test backend/${{ matrix.service }}
+        
+    - name: Scan image with Trivy
+      uses: aquasecurity/trivy-action@master
+      with:
+        image-ref: 'local-ai-agent-${{ matrix.service }}:test'
+        format: 'table'
+        exit-code: '1'
+        ignore-unfixed: true
+        severity: 'CRITICAL,HIGH'
+        
+  scan-frontend-images:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        app: [shell, task-management-app, result-viewer-app]
+    
+    steps:
+    - uses: actions/checkout@v3
+      
+    - name: Build image
+      run: |
+        docker build -t local-ai-agent-${{ matrix.app }}:test frontend/${{ matrix.app }}
+        
+    - name: Scan image with Trivy
+      uses: aquasecurity/trivy-action@master
+      with:
+        image-ref: 'local-ai-agent-${{ matrix.app }}:test'
+        format: 'table'
+        exit-code: '1'
+        ignore-unfixed: true
+        severity: 'CRITICAL,HIGH'

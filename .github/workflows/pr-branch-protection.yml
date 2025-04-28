@@ -1,0 +1,47 @@
+name: PR Branch Protection
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+    branches: [ main ]
+
+jobs:
+  check-branch:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - uses: actions/checkout@v3
+      
+    - name: Check branch name
+      id: check-branch
+      run: |
+        BRANCH_NAME="${{ github.head_ref }}"
+        
+        # Check if branch name follows convention
+        if [[ $BRANCH_NAME =~ ^(feature|bugfix|hotfix|release|docs|refactor|test|chore)/[a-z0-9-]+$ ]]; then
+          echo "valid_branch=true" >> $GITHUB_OUTPUT
+        else
+          echo "valid_branch=false" >> $GITHUB_OUTPUT
+        fi
+        
+    - name: Comment on PR with invalid branch name
+      if: steps.check-branch.outputs.valid_branch == 'false'
+      uses: thollander/actions-comment-pull-request@v2
+      with:
+        message: |
+          ⚠️ **Invalid Branch Name**
+          
+          Your branch name `${{ github.head_ref }}` does not follow our branch naming convention.
+          
+          Please use one of the following formats:
+          - `feature/short-description` for new features
+          - `bugfix/short-description` for bug fixes
+          - `hotfix/short-description` for urgent fixes
+          - `release/version` for release branches
+          - `docs/short-description` for documentation changes
+          - `refactor/short-description` for code refactoring
+          - `test/short-description` for test changes
+          - `chore/short-description` for maintenance tasks
+          
+          The description should use kebab-case (lowercase with hyphens).
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

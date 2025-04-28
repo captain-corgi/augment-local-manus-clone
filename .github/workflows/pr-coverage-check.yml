@@ -1,0 +1,88 @@
+name: PR Coverage Check
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+    branches: [ main ]
+
+jobs:
+  coverage:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - uses: actions/checkout@v3
+      with:
+        fetch-depth: 0
+        
+    - name: Set up Go
+      uses: actions/setup-go@v4
+      with:
+        go-version: '1.21'
+        
+    - name: Set up Node.js
+      uses: actions/setup-node@v3
+      with:
+        node-version: '16'
+        
+    - name: Get changed files
+      id: changed-files
+      uses: tj-actions/changed-files@v35
+      with:
+        files: |
+          **/*.go
+          **/*.js
+          **/*.ts
+          **/*.tsx
+          
+    - name: Check if tests exist for changed files
+      id: check-tests
+      if: steps.changed-files.outputs.all_changed_files != ''
+      run: |
+        MISSING_TESTS=false
+        MISSING_TEST_FILES=""
+        
+        for file in ${{ steps.changed-files.outputs.all_changed_files }}; do
+          # Skip test files themselves
+          if [[ $file == *_test.go ]] || [[ $file == *.test.js ]] || [[ $file == *.test.ts ]] || [[ $file == *.test.tsx ]] || [[ $file == *.spec.js ]] || [[ $file == *.spec.ts ]] || [[ $file == *.spec.tsx ]]; then
+            continue
+          fi
+          
+          # Check for Go test files
+          if [[ $file == *.go ]]; then
+            TEST_FILE="${file%.*}_test.go"
+            if [ ! -f "$TEST_FILE" ]; then
+              MISSING_TESTS=true
+              MISSING_TEST_FILES="$MISSING_TEST_FILES\n- $TEST_FILE"
+            fi
+          fi
+          
+          # Check for JS/TS test files
+          if [[ $file == *.js ]] || [[ $file == *.ts ]] || [[ $file == *.tsx ]]; then
+            TEST_FILE="${file%.*}.test.${file##*.}"
+            SPEC_FILE="${file%.*}.spec.${file##*.}"
+            if [ ! -f "$TEST_FILE" ] && [ ! -f "$SPEC_FILE" ]; then
+              MISSING_TESTS=true
+              MISSING_TEST_FILES="$MISSING_TEST_FILES\n- $TEST_FILE or $SPEC_FILE"
+            fi
+          fi
+        done
+        
+        echo "missing_tests=$MISSING_TESTS" >> $GITHUB_OUTPUT
+        echo "missing_test_files<<EOF" >> $GITHUB_OUTPUT
+        echo -e "$MISSING_TEST_FILES" >> $GITHUB_OUTPUT
+        echo "EOF" >> $GITHUB_OUTPUT
+        
+    - name: Comment on PR with missing tests
+      if: steps.check-tests.outputs.missing_tests == 'true'
+      uses: thollander/actions-comment-pull-request@v2
+      with:
+        message: |
+          ⚠️ **Missing Tests**
+          
+          The following files appear to be missing tests:
+          ${{ steps.check-tests.outputs.missing_test_files }}
+          
+          Please consider adding tests for these files to ensure code quality and prevent regressions.
+          
+          Our project aims to maintain good test coverage. If you believe tests are not needed for these files, please explain why in a comment.
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

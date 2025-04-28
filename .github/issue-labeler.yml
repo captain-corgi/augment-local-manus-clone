@@ -1,0 +1,62 @@
+# Issue labeler configuration
+
+# Add 'bug' label to issues with 'bug' in the title
+bug:
+  - '(?i)\bbug\b'
+  - '(?i)\bcrash\b'
+  - '(?i)\berror\b'
+  - '(?i)\bfail\b'
+  - '(?i)\bbroken\b'
+
+# Add 'enhancement' label to issues with 'feature' or 'enhancement' in the title
+enhancement:
+  - '(?i)\bfeature\b'
+  - '(?i)\benhancement\b'
+  - '(?i)\bimprovement\b'
+  - '(?i)\badd\b'
+  - '(?i)\bimplement\b'
+
+# Add 'documentation' label to issues with 'doc' or 'documentation' in the title
+documentation:
+  - '(?i)\bdoc\b'
+  - '(?i)\bdocumentation\b'
+  - '(?i)\btypo\b'
+  - '(?i)\bspelling\b'
+  - '(?i)\bgrammar\b'
+
+# Add 'question' label to issues with 'question' or 'help' in the title
+question:
+  - '(?i)\bquestion\b'
+  - '(?i)\bhelp\b'
+  - '(?i)\bhow to\b'
+  - '(?i)\bwhy\b'
+
+# Add 'backend' label to issues mentioning backend services
+backend:
+  - '(?i)\bbackend\b'
+  - '(?i)\btask service\b'
+  - '(?i)\bai service\b'
+  - '(?i)\bcode execution service\b'
+  - '(?i)\bweb browsing service\b'
+  - '(?i)\bfilesystem service\b'
+  - '(?i)\bgo\b'
+
+# Add 'frontend' label to issues mentioning frontend applications
+frontend:
+  - '(?i)\bfrontend\b'
+  - '(?i)\bshell\b'
+  - '(?i)\btask management app\b'
+  - '(?i)\bresult viewer app\b'
+  - '(?i)\breact\b'
+  - '(?i)\bui\b'
+  - '(?i)\buser interface\b'
+
+# Add 'ci-cd' label to issues mentioning CI/CD
+ci-cd:
+  - '(?i)\bci\b'
+  - '(?i)\bcd\b'
+  - '(?i)\bci/cd\b'
+  - '(?i)\bpipeline\b'
+  - '(?i)\bworkflow\b'
+  - '(?i)\bdeploy\b'
+  - '(?i)\brelease\b'

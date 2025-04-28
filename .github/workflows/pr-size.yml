@@ -1,0 +1,27 @@
+name: PR Size
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+
+jobs:
+  size-label:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - uses: actions/checkout@v3
+      
+    - name: Size label
+      uses: pascalgn/size-label-action@v0.5.0
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        sizes: >
+          {
+            "XS": "0-9",
+            "S": "10-99",
+            "M": "100-499",
+            "L": "500-999",
+            "XL": "1000-1999",
+            "XXL": "2000+"
+          }

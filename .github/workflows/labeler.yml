@@ -1,0 +1,31 @@
+name: Issue and PR Labeler
+
+on:
+  issues:
+    types: [opened, edited]
+  pull_request:
+    types: [opened, synchronize, reopened]
+
+jobs:
+  label-issues:
+    runs-on: ubuntu-latest
+    if: github.event_name == 'issues'
+    
+    steps:
+    - uses: github/issue-labeler@v3
+      with:
+        repo-token: ${{ secrets.GITHUB_TOKEN }}
+        configuration-path: .github/issue-labeler.yml
+        enable-versioned-regex: 0
+        
+  label-prs:
+    runs-on: ubuntu-latest
+    if: github.event_name == 'pull_request'
+    
+    steps:
+    - uses: actions/checkout@v3
+      
+    - uses: actions/labeler@v4
+      with:
+        repo-token: ${{ secrets.GITHUB_TOKEN }}
+        configuration-path: .github/labeler.yml

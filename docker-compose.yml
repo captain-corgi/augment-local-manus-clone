@@ -1,0 +1,134 @@
+version: '3.8'
+
+services:
+  # Backend Services
+  task-service:
+    build:
+      context: ./backend/task-service
+      dockerfile: Dockerfile
+    ports:
+      - "8081:8081"
+    volumes:
+      - ./data/task-service:/data
+    environment:
+      - ENV=development
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8081/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 10s
+
+  ai-service:
+    build:
+      context: ./backend/ai-service
+      dockerfile: Dockerfile
+    ports:
+      - "8082:8082"
+    environment:
+      - ENV=development
+      - OLLAMA_HOST=host.docker.internal
+    restart: unless-stopped
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8082/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 10s
+
+  code-execution-service:
+    build:
+      context: ./backend/code-execution-service
+      dockerfile: Dockerfile
+    ports:
+      - "8083:8083"
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+    environment:
+      - ENV=development
+    restart: unless-stopped
+    privileged: true
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8083/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 10s
+
+  web-browsing-service:
+    build:
+      context: ./backend/web-browsing-service
+      dockerfile: Dockerfile
+    ports:
+      - "8084:8084"
+    environment:
+      - ENV=development
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8084/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 10s
+
+  filesystem-service:
+    build:
+      context: ./backend/filesystem-service
+      dockerfile: Dockerfile
+    ports:
+      - "8085:8085"
+    volumes:
+      - ./workspace:/app/workspace
+    environment:
+      - ENV=development
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8085/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 10s
+
+  # Frontend Applications
+  shell:
+    build:
+      context: ./frontend/shell
+      dockerfile: Dockerfile
+    ports:
+      - "5000:80"
+    environment:
+      - NODE_ENV=development
+    restart: unless-stopped
+    depends_on:
+      - task-management-app
+      - result-viewer-app
+
+  task-management-app:
+    build:
+      context: ./frontend/task-management-app
+      dockerfile: Dockerfile
+    ports:
+      - "5001:80"
+    environment:
+      - NODE_ENV=development
+    restart: unless-stopped
+    depends_on:
+      - task-service
+
+  result-viewer-app:
+    build:
+      context: ./frontend/result-viewer-app
+      dockerfile: Dockerfile
+    ports:
+      - "5002:80"
+    environment:
+      - NODE_ENV=development
+    restart: unless-stopped
+    depends_on:
+      - task-service
+
+volumes:
+  workspace:

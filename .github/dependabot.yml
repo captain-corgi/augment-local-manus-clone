@@ -1,0 +1,199 @@
+version: 2
+updates:
+  # Backend Go dependencies
+  - package-ecosystem: "gomod"
+    directory: "/backend/task-service"
+    schedule:
+      interval: "weekly"
+    open-pull-requests-limit: 10
+    labels:
+      - "dependencies"
+      - "backend"
+      - "task-service"
+      - "automerge"
+      
+  - package-ecosystem: "gomod"
+    directory: "/backend/ai-service"
+    schedule:
+      interval: "weekly"
+    open-pull-requests-limit: 10
+    labels:
+      - "dependencies"
+      - "backend"
+      - "ai-service"
+      - "automerge"
+      
+  - package-ecosystem: "gomod"
+    directory: "/backend/code-execution-service"
+    schedule:
+      interval: "weekly"
+    open-pull-requests-limit: 10
+    labels:
+      - "dependencies"
+      - "backend"
+      - "code-execution-service"
+      - "automerge"
+      
+  - package-ecosystem: "gomod"
+    directory: "/backend/web-browsing-service"
+    schedule:
+      interval: "weekly"
+    open-pull-requests-limit: 10
+    labels:
+      - "dependencies"
+      - "backend"
+      - "web-browsing-service"
+      - "automerge"
+      
+  - package-ecosystem: "gomod"
+    directory: "/backend/filesystem-service"
+    schedule:
+      interval: "weekly"
+    open-pull-requests-limit: 10
+    labels:
+      - "dependencies"
+      - "backend"
+      - "filesystem-service"
+      - "automerge"
+      
+  # Frontend npm dependencies
+  - package-ecosystem: "npm"
+    directory: "/frontend/shell"
+    schedule:
+      interval: "weekly"
+    open-pull-requests-limit: 10
+    labels:
+      - "dependencies"
+      - "frontend"
+      - "shell"
+      - "automerge"
+      
+  - package-ecosystem: "npm"
+    directory: "/frontend/task-management-app"
+    schedule:
+      interval: "weekly"
+    open-pull-requests-limit: 10
+    labels:
+      - "dependencies"
+      - "frontend"
+      - "task-management-app"
+      - "automerge"
+      
+  - package-ecosystem: "npm"
+    directory: "/frontend/result-viewer-app"
+    schedule:
+      interval: "weekly"
+    open-pull-requests-limit: 10
+    labels:
+      - "dependencies"
+      - "frontend"
+      - "result-viewer-app"
+      - "automerge"
+      
+  # GitHub Actions dependencies
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+    open-pull-requests-limit: 10
+    labels:
+      - "dependencies"
+      - "ci-cd"
+      - "automerge"
+      
+  # Docker dependencies
+  - package-ecosystem: "docker"
+    directory: "/backend/task-service"
+    schedule:
+      interval: "weekly"
+    open-pull-requests-limit: 10
+    labels:
+      - "dependencies"
+      - "docker"
+      - "backend"
+      - "task-service"
+      - "automerge"
+      
+  - package-ecosystem: "docker"
+    directory: "/backend/ai-service"
+    schedule:
+      interval: "weekly"
+    open-pull-requests-limit: 10
+    labels:
+      - "dependencies"
+      - "docker"
+      - "backend"
+      - "ai-service"
+      - "automerge"
+      
+  - package-ecosystem: "docker"
+    directory: "/backend/code-execution-service"
+    schedule:
+      interval: "weekly"
+    open-pull-requests-limit: 10
+    labels:
+      - "dependencies"
+      - "docker"
+      - "backend"
+      - "code-execution-service"
+      - "automerge"
+      
+  - package-ecosystem: "docker"
+    directory: "/backend/web-browsing-service"
+    schedule:
+      interval: "weekly"
+    open-pull-requests-limit: 10
+    labels:
+      - "dependencies"
+      - "docker"
+      - "backend"
+      - "web-browsing-service"
+      - "automerge"
+      
+  - package-ecosystem: "docker"
+    directory: "/backend/filesystem-service"
+    schedule:
+      interval: "weekly"
+    open-pull-requests-limit: 10
+    labels:
+      - "dependencies"
+      - "docker"
+      - "backend"
+      - "filesystem-service"
+      - "automerge"
+      
+  - package-ecosystem: "docker"
+    directory: "/frontend/shell"
+    schedule:
+      interval: "weekly"
+    open-pull-requests-limit: 10
+    labels:
+      - "dependencies"
+      - "docker"
+      - "frontend"
+      - "shell"
+      - "automerge"
+      
+  - package-ecosystem: "docker"
+    directory: "/frontend/task-management-app"
+    schedule:
+      interval: "weekly"
+    open-pull-requests-limit: 10
+    labels:
+      - "dependencies"
+      - "docker"
+      - "frontend"
+      - "task-management-app"
+      - "automerge"
+      
+  - package-ecosystem: "docker"
+    directory: "/frontend/result-viewer-app"
+    schedule:
+      interval: "weekly"
+    open-pull-requests-limit: 10
+    labels:
+      - "dependencies"
+      - "docker"
+      - "frontend"
+      - "result-viewer-app"
+      - "automerge"

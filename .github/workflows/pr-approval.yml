@@ -1,0 +1,53 @@
+name: PR Approval
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+
+jobs:
+  approve-dependabot:
+    runs-on: ubuntu-latest
+    if: github.actor == 'dependabot[bot]'
+    
+    steps:
+    - name: Approve PR
+      run: |
+        gh pr review --approve "$PR_URL"
+      env:
+        PR_URL: ${{ github.event.pull_request.html_url }}
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        
+  approve-docs:
+    runs-on: ubuntu-latest
+    if: github.actor != 'dependabot[bot]'
+    
+    steps:
+    - uses: actions/checkout@v3
+      with:
+        fetch-depth: 0
+        
+    - name: Check if PR only contains documentation changes
+      id: check-docs
+      run: |
+        DOCS_ONLY=true
+        
+        # Get list of changed files
+        CHANGED_FILES=$(git diff --name-only origin/main...HEAD)
+        
+        # Check if all changed files are documentation
+        for file in $CHANGED_FILES; do
+          if [[ "$file" != *.md && "$file" != docs/* ]]; then
+            DOCS_ONLY=false
+            break
+          fi
+        done
+        
+        echo "docs_only=$DOCS_ONLY" >> $GITHUB_OUTPUT
+        
+    - name: Approve PR if docs only
+      if: steps.check-docs.outputs.docs_only == 'true'
+      run: |
+        gh pr review --approve "$PR_URL"
+      env:
+        PR_URL: ${{ github.event.pull_request.html_url }}
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

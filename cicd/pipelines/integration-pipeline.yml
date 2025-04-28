@@ -1,0 +1,94 @@
+name: Integration Tests
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+  workflow_run:
+    workflows: ["Backend CI/CD", "Frontend CI/CD"]
+    types:
+      - completed
+
+jobs:
+  integration-tests:
+    runs-on: ubuntu-latest
+    if: ${{ github.event_name != 'workflow_run' || github.event.workflow_run.conclusion == 'success' }}
+    
+    services:
+      task-service:
+        image: yourusername/local-ai-agent-task-service:latest
+        ports:
+          - 8081:8081
+      ai-service:
+        image: yourusername/local-ai-agent-ai-service:latest
+        ports:
+          - 8082:8082
+      code-execution-service:
+        image: yourusername/local-ai-agent-code-execution-service:latest
+        ports:
+          - 8083:8083
+      web-browsing-service:
+        image: yourusername/local-ai-agent-web-browsing-service:latest
+        ports:
+          - 8084:8084
+      filesystem-service:
+        image: yourusername/local-ai-agent-filesystem-service:latest
+        ports:
+          - 8085:8085
+      shell:
+        image: yourusername/local-ai-agent-shell:latest
+        ports:
+          - 5000:5000
+      task-management-app:
+        image: yourusername/local-ai-agent-task-management-app:latest
+        ports:
+          - 5001:5001
+      result-viewer-app:
+        image: yourusername/local-ai-agent-result-viewer-app:latest
+        ports:
+          - 5002:5002
+    
+    steps:
+    - uses: actions/checkout@v3
+
+    - name: Set up Go
+      uses: actions/setup-go@v4
+      with:
+        go-version: '1.21'
+        
+    - name: Set up Node.js
+      uses: actions/setup-node@v3
+      with:
+        node-version: '16'
+        
+    - name: Install Cypress
+      run: npm install cypress
+        
+    - name: Run API integration tests
+      run: |
+        cd tests
+        go test -v ./integration/api
+        
+    - name: Run UI integration tests
+      run: |
+        cd tests
+        npx cypress run
+        
+    - name: Run end-to-end tests
+      run: |
+        cd tests
+        go test -v ./integration/e2e
+        
+  deploy-production:
+    needs: integration-tests
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    
+    steps:
+    - uses: actions/checkout@v3
+    
+    - name: Deploy to production
+      run: |
+        echo "Deploying to production..."
+        # Add production deployment commands here

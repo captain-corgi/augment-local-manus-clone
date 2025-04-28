@@ -1,0 +1,67 @@
+name: Dependency Scanning
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+  schedule:
+    - cron: '0 0 * * 2'  # Run every Tuesday at midnight
+
+jobs:
+  go-dependency-scan:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - uses: actions/checkout@v3
+      
+    - name: Set up Go
+      uses: actions/setup-go@v4
+      with:
+        go-version: '1.21'
+        
+    - name: Run Nancy
+      run: |
+        go install github.com/sonatype-nexus-community/nancy@latest
+        for service in backend/*; do
+          if [ -d "$service" ]; then
+            echo "Scanning dependencies for $service..."
+            cd $service
+            go list -json -deps ./... | nancy sleuth
+            cd -
+          fi
+        done
+        
+  npm-dependency-scan:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - uses: actions/checkout@v3
+      
+    - name: Set up Node.js
+      uses: actions/setup-node@v3
+      with:
+        node-version: '16'
+        
+    - name: Run npm audit
+      run: |
+        for app in frontend/*; do
+          if [ -d "$app" ]; then
+            echo "Scanning dependencies for $app..."
+            cd $app
+            npm audit --production
+            cd -
+          fi
+        done
+        
+  dependency-review:
+    runs-on: ubuntu-latest
+    if: github.event_name == 'pull_request'
+    
+    steps:
+    - uses: actions/checkout@v3
+      
+    - name: Dependency Review
+      uses: actions/dependency-review-action@v3
+      with:
+        fail-on-severity: high

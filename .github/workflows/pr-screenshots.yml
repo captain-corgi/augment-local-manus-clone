@@ -1,0 +1,76 @@
+name: PR Screenshots
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+    paths:
+      - 'frontend/**/*'
+
+jobs:
+  screenshots:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - uses: actions/checkout@v3
+      
+    - name: Set up Node.js
+      uses: actions/setup-node@v3
+      with:
+        node-version: '16'
+        
+    - name: Install dependencies
+      run: |
+        cd frontend/shell
+        npm ci
+        
+    - name: Build frontend
+      run: |
+        cd frontend/shell
+        npm run build
+        
+    - name: Start frontend
+      run: |
+        cd frontend/shell
+        npm run preview &
+        sleep 5
+        
+    - name: Take screenshots
+      uses: flameddd/screenshots-ci-action@v1.1.1
+      with:
+        url: http://localhost:5000
+        devices: iPhone 6,iPhone X,iPad,Nexus 10,Laptop,Desktop
+        
+    - name: Upload screenshots
+      uses: actions/upload-artifact@v3
+      with:
+        name: screenshots
+        path: screenshots
+        
+    - name: Comment on PR with screenshots
+      uses: actions/github-script@v6
+      with:
+        github-token: ${{ secrets.GITHUB_TOKEN }}
+        script: |
+          const fs = require('fs');
+          const path = require('path');
+          
+          const screenshotsDir = path.join(process.env.GITHUB_WORKSPACE, 'screenshots');
+          const files = fs.readdirSync(screenshotsDir);
+          
+          let comment = '## UI Screenshots\n\n';
+          comment += 'Here are screenshots of the UI after your changes:\n\n';
+          
+          for (const file of files) {
+            if (file.endsWith('.png')) {
+              const device = file.replace('.png', '');
+              comment += `### ${device}\n\n`;
+              comment += `![${device}](https://github.com/${process.env.GITHUB_REPOSITORY}/actions/runs/${process.env.GITHUB_RUN_ID}/artifacts/screenshots/${file})\n\n`;
+            }
+          }
+          
+          github.rest.issues.createComment({
+            issue_number: context.issue.number,
+            owner: context.repo.owner,
+            repo: context.repo.repo,
+            body: comment
+          });

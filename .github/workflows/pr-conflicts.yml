@@ -1,0 +1,47 @@
+name: PR Conflicts
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    types: [opened, synchronize, reopened]
+
+jobs:
+  check-conflicts:
+    runs-on: ubuntu-latest
+    if: github.event_name == 'pull_request'
+    
+    steps:
+    - uses: actions/checkout@v3
+      with:
+        fetch-depth: 0
+        
+    - name: Check for merge conflicts
+      id: check-conflicts
+      run: |
+        git fetch origin main
+        git checkout ${{ github.event.pull_request.head.ref }}
+        
+        # Check if there are merge conflicts
+        if git merge-tree $(git merge-base HEAD origin/main) origin/main HEAD | grep -q "^<<<<<<< "; then
+          echo "has_conflicts=true" >> $GITHUB_OUTPUT
+        else
+          echo "has_conflicts=false" >> $GITHUB_OUTPUT
+        fi
+        
+    - name: Comment on PR with conflicts
+      if: steps.check-conflicts.outputs.has_conflicts == 'true'
+      uses: thollander/actions-comment-pull-request@v2
+      with:
+        message: |
+          ⚠️ **Merge Conflicts Detected**
+          
+          This PR has merge conflicts with the base branch. Please resolve these conflicts before merging.
+          
+          To resolve the conflicts:
+          1. Fetch the latest changes from the base branch: `git fetch origin main`
+          2. Merge the base branch into your branch: `git merge origin/main`
+          3. Resolve the conflicts in the affected files
+          4. Commit the resolved conflicts: `git commit -am "Resolve merge conflicts"`
+          5. Push the changes: `git push`
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

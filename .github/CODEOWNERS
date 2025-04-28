@@ -1,0 +1,21 @@
+# Default owners for everything in the repo
+* @yourusername
+
+# Backend services
+/backend/task-service/ @yourusername
+/backend/ai-service/ @yourusername
+/backend/code-execution-service/ @yourusername
+/backend/web-browsing-service/ @yourusername
+/backend/filesystem-service/ @yourusername
+
+# Frontend applications
+/frontend/shell/ @yourusername
+/frontend/task-management-app/ @yourusername
+/frontend/result-viewer-app/ @yourusername
+
+# Documentation
+/docs/ @yourusername
+
+# CI/CD
+/cicd/ @yourusername
+/.github/ @yourusername

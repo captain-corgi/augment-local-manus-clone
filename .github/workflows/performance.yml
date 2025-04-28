@@ -1,0 +1,85 @@
+name: Performance Testing
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+  schedule:
+    - cron: '0 0 * * 3'  # Run every Wednesday at midnight
+  workflow_dispatch:
+
+jobs:
+  backend-performance:
+    runs-on: ubuntu-latest
+    
+    services:
+      task-service:
+        image: yourusername/local-ai-agent-task-service:latest
+        ports:
+          - 8081:8081
+      ai-service:
+        image: yourusername/local-ai-agent-ai-service:latest
+        ports:
+          - 8082:8082
+      code-execution-service:
+        image: yourusername/local-ai-agent-code-execution-service:latest
+        ports:
+          - 8083:8083
+      web-browsing-service:
+        image: yourusername/local-ai-agent-web-browsing-service:latest
+        ports:
+          - 8084:8084
+      filesystem-service:
+        image: yourusername/local-ai-agent-filesystem-service:latest
+        ports:
+          - 8085:8085
+    
+    steps:
+    - uses: actions/checkout@v3
+      
+    - name: Install k6
+      run: |
+        curl -L https://github.com/grafana/k6/releases/download/v0.45.0/k6-v0.45.0-linux-amd64.tar.gz | tar xz
+        sudo mv k6-v0.45.0-linux-amd64/k6 /usr/local/bin
+        
+    - name: Run performance tests
+      run: |
+        k6 run tests/performance/api_performance.js
+        
+    - name: Upload performance test results
+      uses: actions/upload-artifact@v3
+      with:
+        name: performance-test-results
+        path: tests/performance/results
+        
+  frontend-performance:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - uses: actions/checkout@v3
+      
+    - name: Set up Node.js
+      uses: actions/setup-node@v3
+      with:
+        node-version: '16'
+        
+    - name: Install Lighthouse CI
+      run: |
+        npm install -g @lhci/cli
+        
+    - name: Build frontend
+      run: |
+        cd frontend/shell
+        npm ci
+        npm run build
+        
+    - name: Run Lighthouse CI
+      run: |
+        lhci autorun
+        
+    - name: Upload Lighthouse results
+      uses: actions/upload-artifact@v3
+      with:
+        name: lighthouse-results
+        path: .lighthouseci

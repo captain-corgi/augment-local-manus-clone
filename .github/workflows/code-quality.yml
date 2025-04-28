@@ -1,0 +1,89 @@
+name: Code Quality
+
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main, develop ]
+
+jobs:
+  code-quality:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - uses: actions/checkout@v3
+      with:
+        fetch-depth: 0
+        
+    - name: Set up Go
+      uses: actions/setup-go@v4
+      with:
+        go-version: '1.21'
+        
+    - name: Set up Node.js
+      uses: actions/setup-node@v3
+      with:
+        node-version: '16'
+        
+    - name: Run gofmt
+      run: |
+        GOFMT_FILES=$(gofmt -l $(find . -name '*.go' | grep -v vendor))
+        if [ -n "$GOFMT_FILES" ]; then
+          echo "The following files need to be formatted with gofmt:"
+          echo "$GOFMT_FILES"
+          exit 1
+        fi
+        
+    - name: Run go vet
+      run: |
+        for service in backend/*; do
+          if [ -d "$service" ]; then
+            echo "Running go vet on $service..."
+            cd $service
+            go vet ./...
+            cd -
+          fi
+        done
+        
+    - name: Run Prettier
+      run: |
+        npm install -g prettier
+        PRETTIER_FILES=$(prettier --check "frontend/**/*.{js,jsx,ts,tsx,json,css,scss,md}" || echo "failed")
+        if [ "$PRETTIER_FILES" = "failed" ]; then
+          echo "The following files need to be formatted with Prettier:"
+          prettier --list-different "frontend/**/*.{js,jsx,ts,tsx,json,css,scss,md}"
+          exit 1
+        fi
+        
+    - name: Run SonarCloud Scan
+      uses: SonarSource/sonarcloud-github-action@master
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+      with:
+        args: >
+          -Dsonar.projectKey=yourusername_local-ai-agent-system
+          -Dsonar.organization=yourusername
+          
+  security-scan:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - uses: actions/checkout@v3
+      
+    - name: Run Snyk to check for vulnerabilities
+      uses: snyk/actions/golang@master
+      continue-on-error: true
+      env:
+        SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
+      with:
+        args: --severity-threshold=high
+        
+    - name: Run Trivy vulnerability scanner
+      uses: aquasecurity/trivy-action@master
+      with:
+        scan-type: 'fs'
+        ignore-unfixed: true
+        format: 'table'
+        exit-code: '1'
+        severity: 'CRITICAL,HIGH'

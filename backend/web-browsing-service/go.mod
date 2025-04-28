@@ -1,10 +1,11 @@
 module github.com/augment-local-manus-clone/backend/web-browsing-service
 
-go 1.21
+go 1.24.2
 
 require (
 	github.com/chromedp/chromedp v0.9.3
 	github.com/gin-gonic/gin v1.9.1
+	github.com/google/uuid v1.4.0
 )
 
 require (
@@ -22,7 +23,7 @@ require (
 	github.com/gobwas/pool v0.2.1 // indirect
 	github.com/gobwas/ws v1.3.0 // indirect
 	github.com/goccy/go-json v0.10.2 // indirect
-	github.com/google/uuid v1.4.0 // indirect
+	github.com/google/go-cmp v0.5.9 // indirect
 	github.com/josharian/intern v1.0.0 // indirect
 	github.com/json-iterator/go v1.1.12 // indirect
 	github.com/klauspost/cpuid/v2 v2.2.6 // indirect

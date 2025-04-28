@@ -1,10 +1,11 @@
 module github.com/augment-local-manus-clone/backend/code-execution-service
 
-go 1.21
+go 1.24.2
 
 require (
 	github.com/docker/docker v24.0.7+incompatible
 	github.com/gin-gonic/gin v1.9.1
+	github.com/google/uuid v1.4.0
 )
 
 require (
@@ -23,7 +24,7 @@ require (
 	github.com/go-playground/validator/v10 v10.16.0 // indirect
 	github.com/goccy/go-json v0.10.2 // indirect
 	github.com/gogo/protobuf v1.3.2 // indirect
-	github.com/google/uuid v1.4.0 // indirect
+	github.com/google/go-cmp v0.5.9 // indirect
 	github.com/json-iterator/go v1.1.12 // indirect
 	github.com/klauspost/cpuid/v2 v2.2.6 // indirect
 	github.com/leodido/go-urn v1.2.4 // indirect

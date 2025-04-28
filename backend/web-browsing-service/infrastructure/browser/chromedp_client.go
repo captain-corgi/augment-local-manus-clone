@@ -9,7 +9,6 @@ import (
 
 	"github.com/augment-local-manus-clone/backend/web-browsing-service/domain"
 	"github.com/chromedp/chromedp"
-	"github.com/google/uuid"
 )
 
 // ChromeDPClient implements the BrowserClient interface using chromedp
@@ -225,8 +224,8 @@ func (c *ChromeDPClient) Interact(request *domain.WebInteractionRequest) (*domai
 		tasks = append(tasks, chromedp.SendKeys(request.Selector, request.Value, chromedp.ByQuery))
 	case "focus":
 		tasks = append(tasks, chromedp.Focus(request.Selector, chromedp.ByQuery))
-	case "hover":
-		tasks = append(tasks, chromedp.MouseOver(request.Selector, chromedp.ByQuery))
+	// case "hover":
+	// 	tasks = append(tasks, chromedp.MouseOver(request.Selector, chromedp.ByQuery))
 	case "scroll":
 		tasks = append(tasks, chromedp.ScrollIntoView(request.Selector, chromedp.ByQuery))
 	case "screenshot":

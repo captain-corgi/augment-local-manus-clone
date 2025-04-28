@@ -1,0 +1,9 @@
+go 1.24.2
+
+use (
+	./ai-service
+	./code-execution-service
+	./filesystem-service
+	./task-service
+	./web-browsing-service
+)

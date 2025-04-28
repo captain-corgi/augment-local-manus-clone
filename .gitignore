@@ -6,7 +6,7 @@
 *.dylib
 *.test
 *.out
-go.work
+*/vendor
 
 # Node.js
 node_modules/

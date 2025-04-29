@@ -12,7 +12,7 @@ export default defineConfig({
       exposes: {
         './App': './src/App.tsx',
       },
-      shared: ['react', 'react-dom'],
+      shared: ['react', 'react-dom', 'react-router-dom'],
     }),
   ],
   server: {
@@ -31,9 +31,14 @@ export default defineConfig({
     minify: false,
     cssCodeSplit: false,
     modulePreload: false,
+    outDir: 'dist',
+    assetsDir: '.',
     rollupOptions: {
       output: {
         format: 'esm',
+        entryFileNames: '[name].js',
+        chunkFileNames: '[name].js',
+        assetFileNames: '[name].[ext]',
       },
     },
   },

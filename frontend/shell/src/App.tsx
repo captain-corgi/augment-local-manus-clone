@@ -8,36 +8,26 @@ import WebBrowsing from './components/WebBrowsing';
 import Filesystem from './components/Filesystem';
 import Settings from './components/Settings';
 
-// Placeholder components for micro frontends
+// Micro frontend components using iframes
 const TaskManagement = () => (
-  <div className="p-8 bg-white shadow-md rounded-lg">
-    <h2 className="text-2xl font-bold mb-4">Task Management</h2>
-    <p className="text-gray-600">
-      This is a placeholder for the Task Management application.
-      In a production environment, this would be loaded as a micro frontend.
-    </p>
-    <div className="mt-4 p-4 bg-blue-50 border border-blue-200 rounded-md">
-      <p className="text-blue-700">
-        The micro frontend integration is currently being configured.
-        Please check back later.
-      </p>
-    </div>
+  <div className="h-full">
+    <iframe
+      src="http://localhost:5001"
+      title="Task Management"
+      className="w-full h-full border-none"
+      style={{ minHeight: '600px' }}
+    />
   </div>
 );
 
 const ResultViewer = () => (
-  <div className="p-8 bg-white shadow-md rounded-lg">
-    <h2 className="text-2xl font-bold mb-4">Result Viewer</h2>
-    <p className="text-gray-600">
-      This is a placeholder for the Result Viewer application.
-      In a production environment, this would be loaded as a micro frontend.
-    </p>
-    <div className="mt-4 p-4 bg-blue-50 border border-blue-200 rounded-md">
-      <p className="text-blue-700">
-        The micro frontend integration is currently being configured.
-        Please check back later.
-      </p>
-    </div>
+  <div className="h-full">
+    <iframe
+      src="http://localhost:5002"
+      title="Result Viewer"
+      className="w-full h-full border-none"
+      style={{ minHeight: '600px' }}
+    />
   </div>
 );
 

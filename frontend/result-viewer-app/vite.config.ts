@@ -17,6 +17,11 @@ export default defineConfig({
   ],
   server: {
     port: 5002,
+    origin: 'http://localhost:5002',
+    cors: true,
+    headers: {
+      'Access-Control-Allow-Origin': '*',
+    },
   },
   preview: {
     port: 5002,
@@ -25,5 +30,11 @@ export default defineConfig({
     target: 'esnext',
     minify: false,
     cssCodeSplit: false,
+    modulePreload: false,
+    rollupOptions: {
+      output: {
+        format: 'esm',
+      },
+    },
   },
 });

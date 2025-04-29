@@ -9,7 +9,10 @@ help:
 	@echo "  make build       - Build all components"
 	@echo "  make test        - Run all tests"
 	@echo "  make run         - Run the system using Docker Compose"
-	@echo "  make run-frontend - Run only the frontend applications in development mode"
+	@echo "  make run-frontend - Run all frontend applications in development mode"
+	@echo "  make run-shell   - Run only the shell application in development mode"
+	@echo "  make run-task-app - Run only the task management application in development mode"
+	@echo "  make run-result-app - Run only the result viewer application in development mode"
 	@echo "  make stop        - Stop the system"
 	@echo "  make clean       - Clean up Docker resources"
 	@echo "  make backup      - Create a backup of the system data"
@@ -64,22 +67,42 @@ run-frontend:
 	@echo "Starting frontend applications in development mode..."
 	@echo "Setting up shell application..."
 	@cd frontend/shell && npm install
-	@echo "Starting shell application..."
-	@cd frontend/shell && npm run dev &
 	@echo "Setting up task management application..."
 	@cd frontend/task-management-app && npm install
-	@echo "Starting task management application..."
-	@cd frontend/task-management-app && npm run dev &
 	@echo "Setting up result viewer application..."
 	@cd frontend/result-viewer-app && npm install
+
+	@echo "Starting task management application..."
+	@cd frontend/task-management-app && npm run dev &
 	@echo "Starting result viewer application..."
 	@cd frontend/result-viewer-app && npm run dev &
+	@echo "Starting shell application..."
+	@cd frontend/shell && npm run dev &
+
 	@echo "Frontend applications started."
-	@echo "Access the shell application at http://localhost:5000"
+	@echo "Access the shell application at http://localhost:3000"
 	@echo "Access the task management application at http://localhost:5001"
 	@echo "Access the result viewer application at http://localhost:5002"
 	@echo "Press Ctrl+C to stop all applications."
 	@wait
+
+# Run only the shell application in development mode
+run-shell:
+	@echo "Starting shell application in development mode..."
+	@cd frontend/shell && npm install
+	@cd frontend/shell && npm run dev
+
+# Run only the task management application in development mode
+run-task-app:
+	@echo "Starting task management application in development mode..."
+	@cd frontend/task-management-app && npm install
+	@cd frontend/task-management-app && npm run dev
+
+# Run only the result viewer application in development mode
+run-result-app:
+	@echo "Starting result viewer application in development mode..."
+	@cd frontend/result-viewer-app && npm install
+	@cd frontend/result-viewer-app && npm run dev
 
 # Update the system to the latest version
 update:

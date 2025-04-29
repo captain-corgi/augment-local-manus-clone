@@ -2,6 +2,11 @@ import React from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import MainLayout from './layouts/MainLayout';
 import ErrorBoundary from './components/ErrorBoundary';
+import Dashboard from './components/Dashboard';
+import CodeExecution from './components/CodeExecution';
+import WebBrowsing from './components/WebBrowsing';
+import Filesystem from './components/Filesystem';
+import Settings from './components/Settings';
 
 // Placeholder components for micro frontends
 const TaskManagement = () => (
@@ -42,9 +47,14 @@ function App() {
       <MainLayout>
         <ErrorBoundary>
           <Routes>
+            <Route path="/" element={<Dashboard />} />
             <Route path="/tasks" element={<TaskManagement />} />
             <Route path="/results" element={<ResultViewer />} />
-            <Route path="/" element={<Navigate to="/tasks" replace />} />
+            <Route path="/code-execution" element={<CodeExecution />} />
+            <Route path="/web-browsing" element={<WebBrowsing />} />
+            <Route path="/filesystem" element={<Filesystem />} />
+            <Route path="/settings" element={<Settings />} />
+            <Route path="*" element={<Navigate to="/" replace />} />
           </Routes>
         </ErrorBoundary>
       </MainLayout>

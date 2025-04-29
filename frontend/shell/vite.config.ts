@@ -7,14 +7,14 @@ export default defineConfig({
     react(),
   ],
   server: {
-    port: 5000,
+    port: 3000,
     cors: true,
     headers: {
       'Access-Control-Allow-Origin': '*',
     },
   },
   preview: {
-    port: 5000,
+    port: 3000,
   },
   build: {
     target: 'esnext',

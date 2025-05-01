@@ -12,7 +12,7 @@ jobs:
     - uses: actions/checkout@v3
       
     - name: Lint PR
-      uses: morrisoncole/pr-lint-action@v1.7.0
+      uses: morrisoncole/pr-lint-action@v1.7.1
       with:
         repo-token: ${{ secrets.GITHUB_TOKEN }}
         title-regex: '^(feat|fix|docs|style|refactor|perf|test|build|ci|chore|revert)(\([a-z0-9-]+\))?: [A-Z].+$'

@@ -63,7 +63,7 @@ jobs:
         echo "```" >> stats.md
         
     - name: Create stats issue
-      uses: peter-evans/create-issue-from-file@v4
+      uses: peter-evans/create-issue-from-file@v5
       with:
         title: Monthly Codebase Statistics
         content-filepath: ./stats.md

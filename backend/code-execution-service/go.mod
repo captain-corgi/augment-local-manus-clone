@@ -5,7 +5,7 @@ go 1.24.2
 require (
 	github.com/docker/docker v24.0.7+incompatible
 	github.com/gin-gonic/gin v1.9.1
-	github.com/google/uuid v1.4.0
+	github.com/google/uuid v1.6.0
 )
 
 require (
